@@ -24,4 +24,14 @@ void fillHeader(BFHeader *bf, FILE *fp) {
 	fread(&bf->BIHeader.importantColors, 4, 1, fp);
 }
 
-
+// função que le um bit e retorna se é 1 ou 0 
+int checkBit(unsigned char ch, int position) {
+	// Utiliza um AND bit a bit entre o byte e uma máscara de bits
+	// A máscara é criada deslocando 1 para a posição desejada
+	if (ch & (1 << position)) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}

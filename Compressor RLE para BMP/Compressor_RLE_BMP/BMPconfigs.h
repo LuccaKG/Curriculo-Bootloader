@@ -43,3 +43,4 @@ typedef struct BitmapInfoHeader BIHeader; // 'apelido'
 Função que preencherá os headers. Recebe um ponteiro para o FileHeader e a imagem analisada
 */
 void fillHeader(BFHeader* bf, FILE* fp); // função aqui declarada, mas sera definida num arquivo bmp.c
+int checkBit(unsigned char *ch, int position);// Função que percorrerá cada bit de um byte e retornará um int dizendo se o bit é 0 ou 1
