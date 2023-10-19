@@ -1,4 +1,4 @@
-# Curriculo-Bootloader [em desenvolvimento]
+# Currículo-Bootloader [em desenvolvimento]
 Para praticar os estudos de arquivos poliglotas, criei um arquivo que tanto pode ser lido como .pdf - contendo meu currículo - quanto executado como um bootloader, apresentando uma imagem monocromática .bmp junto de uma mensagem.
 
 ## Estrutura Bootloader 🚀
@@ -31,6 +31,34 @@ int 0x10     ; Invoca a interrupção para exibir o caractere
 </td>
 </tr>
 </table>
+
+Mais informações sobre interrupções na BIOS podem ser acessadas em: http://www.x-hacker.org/ng/bios/ng1d0.html
+
+### Bootloader Multistage
+
+Como a representação de texto + imagem ultrapassará os 512 bytes limitantes, precisaremos utilizar o método de Bootloader Multistage.
+
+
+Um bootloader multistage (ou multietapa) refere-se a um processo de inicialização em que a sequência de boot é dividida em várias fases ou etapas, com cada fase sendo responsável por uma tarefa específica no processo de inicialização. Esta abordagem é frequentemente usada porque o primeiro estágio do bootloader tem restrições de tamanho e, por isso, pode não ser capaz de conter todo o código necessário para inicializar completamente um sistema.
+
+Vamos detalhar um pouco mais sobre essa abordagem:
+
+#### Primeira etapa (ou primeiro estágio):
+
+Localizado no Master Boot Record (MBR) ou em um espaço de inicialização similar.
+Devido à restrição de tamanho (o MBR tem apenas 512 bytes), este estágio geralmente contém apenas código suficiente para carregar o próximo estágio do bootloader.
+Identifica e carrega o segundo estágio do bootloader de uma localização específica no disco.
+
+
+#### Segunda etapa (ou segundo estágio):
+
+Localizado em uma região mais flexível do disco.
+Tem mais espaço e, portanto, pode realizar tarefas mais complexas, como identificar e carregar um sistema operacional específico, configurar o hardware necessário ou até mesmo exibir um menu para o usuário escolher entre múltiplos sistemas operacionais.
+Pode também, em alguns sistemas, ter um terceiro estágio ou mais, caso a complexidade do processo de inicialização o exija.
+Um exemplo clássico de um bootloader multistage é o GRUB (GRand Unified Bootloader). No primeiro estágio, o GRUB simplesmente identifica e carrega o próximo estágio do bootloader. No segundo estágio, ele pode apresentar um menu ao usuário para escolher um sistema operacional, inicializar esse sistema operacional, entre outras tarefas.
+
+A abordagem multistage permite uma maior flexibilidade e modularidade na inicialização, pois cada estágio pode ser otimizado para uma tarefa específica, sem sobrecarregar ou complicar excessivamente qualquer estágio individual. Utilizaremos o sistema de arquivos ***FAT12*** - comumente usado em disquetes e algumas partições de inicialização - para armazenar o bootloader. 
+
 
 ## Estrutura BMP 🖼️
 
