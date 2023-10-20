@@ -26,7 +26,6 @@ argv[3] será "arg3".
 
 int main(int argc, char* argv[]) {
     FILE* fp; 
-    char arg[] = "C:\\Users\\lucca\\OneDrive\\Documentos\\cv.bmp";
     errno_t err; // variavel que receberá o código de saída do fopen_s após tentativa de abrir o arquivo
     int totalWidth; // calcula o numero de bits necessarios para definir uma linha
     int bytesPerRow; // numero de bytes necessarios para representar uma linha em BMP 
@@ -39,8 +38,11 @@ int main(int argc, char* argv[]) {
     /*
     Para permitir uma execução adequada via terminal, vamos configurar as condições para argc e argv
     */
-    if (argc < 2) { // se só tiver um argumento, a imagem comprimida será a padrão
-        err = fopen_s(&fp, arg, "rb");
+    if (argc < 2) { // se não for passado o path da imagem, retorna mensagem explicando o 'usage'
+        printf("Usage: Compressor_RLE_BMP.exe [OPTIONS] <picture_path>\n\n");
+        printf("Where:\n    <picture_path> is the path to .bmp monochromatic picture 320x200\n");
+        return 0;
+
     }
     else { // caso contrario, mesmo que tenham muitos parametros de entrada, trabalharemos no primeiro 
         err = fopen_s(&fp, argv[1], "rb");
