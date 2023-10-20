@@ -4,6 +4,30 @@ Para praticar os estudos de arquivos poliglotas, criei um arquivo que tanto pode
 ### Bootloader
 ![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/cf41fa11-aeef-4bb6-b9c9-e779bde306a8)
 
+## Como utilizar o projeto
+
+### Gerando Bootloader
+
+- [x] Tenha em mãos a imagem monocromática em formato .bmp que deseja utilizar (não utilize imagens com sequências >= 255 pixels iguais antes do final da representação da imagem, conforme detalhado no tópico *Possíveis melhorias 🔍*)
+- [x] Abra o terminal no path "Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\x64\Debug\" e execute "Compressor_RLE_BMP.exe <picture_path>" para comprimir sua imagem. A saída deve ser algo no formato abaixo
+
+     ![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/5aeb86ac-0ced-48e2-a511-ba06672b53fb)
+- [x] Copie a saída e adicione depois do último valor o número 255, que será útil para o funcionamento da lógica em Assembly que gerará o binário bootloader
+- [x] Abra o script "Curriculo Bootloader\Bootloader\Bootloader.asm" com o editor de texto de sua preferência
+- [x] Modifique *OEMname* e *volumeLabel* conforme sua preferência para identificação do projeto
+
+     ![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/7c83082d-fa88-4284-8662-631a49b43e70)
+- [x] No trecho de definição de variáveis, modifique a mensagem conforme queira
+      
+     ![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/6f648956-746e-4bc1-a6c5-61245e059378)
+- [x] No final do código, na definição de *dados*, substitua com seus respectivos dados de compressão copiados anteriormente. Note que o script foi implementado para representar a imagem byte a byte, por isso
+      cada sequência é representada por um dado do tipo *db*, o que justifica a 2ª instrução pedindo para evitarmos imagens com sequências de pixels >= 255 antes do final da representação
+      
+     ![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/f831ab08-f434-48c4-b029-54fcf660a8f6)
+- [x] Se desejar, faça as alterações necessárias na cor da fonte, do fundo etc
+- [x] Após essas alterações, salve o arquivo e faça a montagem utilizando o FASM ou qualquer assembler de sua preferência
+- [x] Utilize o .bin gerado como bootloader em sua máquina física ou virtual. Atente-se ao fato de que o bootloader foi programado para ser armazenado em um disquete (floppy). 
+
 
 ## Estrutura Bootloader 🚀
 
