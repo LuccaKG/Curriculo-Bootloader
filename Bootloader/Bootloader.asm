@@ -262,11 +262,11 @@ dw 0xAA55 ; os dois ultimos bytes precisam ser preenchidos assim. É uma assinat
 
 ; INICIO DA PARTE 2
 
-stage2: 
+stage2:
+    call Desenho    ; Chama o procedimento "Desenho" para iniciar o desenho da imagem
+final:
+    jmp $           ; Loop infinito, mantendo o programa em execução indefinidamente
 
-call Desenho
-final: 
-jmp $
 
 Desenho:
 ;implementa fundo branco utilizando interrupção 'write pixel'
@@ -284,82 +284,93 @@ Desenho:
 
         ; Return  Nothing
 
-push bp
-mov bp, sp
-pusha
+; Salvando o ambiente de trabalho atual
+    push bp         ; Salva o atual ponteiro base
+    mov bp, sp      ; Ajusta o ponteiro base para apontar para o topo da pilha
+    pusha           ; Salva todos os registros para restaurá-los depois
 
-xor ax, ax
-mov ds, ax
-mov si, ax
+    ; Inicialização de registros
+    xor ax, ax      ; Limpa o registro AX
+    mov ds, ax      ; Define o segmento de dados como 0
+    mov si, ax      ; Zera o registro SI, que será usado como índice para os dados
 
-push 0x0F ; cor branca (inicial na imagem) [sp + 0x06]
-push 0x00 ; X - Horizontal
-push 199 ; Y - Vertical [sp + 0x02]
-push 0x00 ; Num. de repetições [sp]
+    ; Preparação inicial para o desenho
+    push 0x0F       ; Empilha a cor branca para a inicialização
+    push 0x00       ; Empilha a posição X (horizontal) inicial
+    push 199        ; Empilha a posição Y (vertical) inicial
+    push 0x00       ; Empilha o contador de repetições inicial
 
-mov di, sp 
-mov bl, byte [0x7C00 + dados + si] ; repetições
+    mov di, sp      ; DI agora aponta para o topo da pilha (para as informações recém-armazenadas)
+    mov bl, byte [0x7C00 + dados + si] ; Carrega o número de repetições a partir dos dados da imagem
 
-inicio: 
-mov dx, [di + 0x02] ; Vertical
+inicio:
+    ; Começo do loop de desenho
+    mov dx, [di + 0x02] ; Carrega a posição vertical atual para DX
 
 volta1:
-xor bh, bh 
-mov cx, [di + 0x04]
-mov al, [di + 0x06]
-mov ah, 0x0C
-int 0x10
-dec bl ; diminui uma repetição
-mov [di], bl ; salvo as reps que faltam
-cmp bl, 0
-je trocaCor
-volta2: 
-xor ax, ax 
-mov ax, word[di+0x04]
-inc ax 
-cmp ax, 319
-je preparaRetorno
-mov [di + 0x04], ax 
-jmp volta1
+    ; Configuração para desenho de um pixel
+    xor bh, bh          ; Zera BH (usado para a página de exibição)
+    mov cx, [di + 0x04] ; Carrega a posição horizontal para CX
+    mov al, [di + 0x06] ; Carrega a cor atual
+    mov ah, 0x0C        ; Define a operação de desenho de pixel para a interrupção INT 10h
+    int 0x10            ; Executa a interrupção para desenhar o pixel
+
+    ; Atualiza a contagem de pixels desenhados
+    dec bl              ; Decrementa a contagem de repetições
+    mov [di], bl        ; Atualiza o contador na pilha
+    cmp bl, 0           ; Verifica se todos os pixels da cor atual já foram desenhados
+    je trocaCor         ; Se sim, muda a cor
+
+volta2:
+    ; Atualização da posição horizontal para o próximo pixel
+    xor ax, ax
+    mov ax, word[di+0x04]
+    inc ax              ; Incrementa a posição horizontal
+    cmp ax, 319         ; Verifica se chegou ao final da linha
+    je preparaRetorno   ; Se sim, prepara-se para voltar ao início da próxima linha
+    mov [di + 0x04], ax
+    jmp volta1
 
 preparaRetorno:
-xor ax, ax 
-mov [di + 0x04], ax 
-mov ax, [di + 0x02]
-dec ax 
-mov [di + 0x02], ax 
-inc si 
-mov bl, byte [0x7C00 + dados + si] 
-cmp bl, 0xFF
-je final 
-jmp inicio 
+    ; Configuração para mudar para a próxima linha
+    xor ax, ax          ; Zera a coordenada horizontal
+    mov [di + 0x04], ax
+    mov ax, [di + 0x02]
+    dec ax              ; Decrementa a coordenada vertical para mover para a próxima linha
+    mov [di + 0x02], ax
+    inc si              ; Avança para o próximo byte de dados da imagem
+    mov bl, byte [0x7C00 + dados + si] ; Carrega o novo contador de repetições
+    cmp bl, 0xFF        ; Verifica se atingiu o final dos dados
+    je final            ; Se sim, termina o desenho
+    jmp inicio
 
 trocaCor:
-mov al, [di +0x06]
-cmp al, 0x0F ; compara se é branco
-je preto
-mov al, 0x0F
-jmp salva
+    ; Muda a cor atual
+    mov al, [di +0x06]  ; Carrega a cor atual
+    cmp al, 0x0F        ; Verifica se a cor é branca
+    je preto            ; Se sim, muda para preto
+    mov al, 0x0F        ; Define a cor branca
+    jmp salva
 
 preto:
-mov al, 0x00
- 
+    ; Define a cor preta
+    mov al, 0x00
+
 salva:
-mov [di + 0x06], al 
-inc si 
-mov bl, byte[0x7c00 + dados + si] 
-cmp bl, 255
-je final 
-mov [di], bl 
-jmp volta2
+    ; Atualiza a cor e continua o processo de desenho
+    mov [di + 0x06], al ; Salva a nova cor na pilha
+    inc si              ; Avança para o próximo byte de dados
+    mov bl, byte[0x7c00 + dados + si]
+    cmp bl, 255         ; Verifica se atingiu o final dos dados
+    je final            ; Se sim, termina o desenho
+    mov [di], bl        ; Atualiza o contador de repetições
+    jmp volta2
 
-
-
-
-popa
-mov sp, bp
-pop bp
-ret
+    ; Restauração do ambiente de trabalho original
+    popa                ; Restaura os registros originais
+    mov sp, bp          ; Restaura o ponteiro de pilha original
+    pop bp              ; Restaura o ponteiro base original
+    ret                 ; Retorna para a chamada original
 
 dados: db 65, 222, 33,65, 221, 34,65, 221, 34,65, 220, 35,65, 220, 35,65, 219, 36,65, 218, 37,65, 217, 38,65, 217, 38,65, 216, 39,65, 215, 40,65, 214, 41,65, 100, 24, 89, 42
        db 65, 93, 38, 81, 43,65, 89, 44, 78, 44,65, 91, 42, 77, 45,65, 93, 41, 75, 46,65, 97, 1, 2, 3, 1, 32, 71, 48,65, 107, 29, 69, 50,65, 108, 2, 1, 25, 68, 51,65, 112, 24
