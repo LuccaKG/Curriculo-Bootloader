@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     int bitCounter = 0; // variavel auxiliar para ajudar a percorrer bit a bit
     int bitQty = 0; // variavel auxiliar para contar quantos bits ja foram lidos. Util para contornar/ignorar os bits de padding nas linhas
     int consecBits = 0; // variavel auxiliar para contar bits repetidos numa sequencia
-    unsigned char currBit = 1; // variavel auxiliar para identificar bit atual. Minha imagem ja começa com bit branco
+    unsigned char currBit; // variavel auxiliar para identificar bit atual. 
     /*
     Para permitir uma execução adequada via terminal, vamos configurar as condições para argc e argv
     */
@@ -126,7 +126,14 @@ e não algum outro tipo de valor inteiro.
     fseek(fp, bf.pixelDataOffset, SEEK_SET); // Utilizamos para posicionar o cursor no ponto em que os dados dos pixels começam a ser
                                                // apresentados (a partir do endereço pixelDataOffset)
     
-    // percorrendo a imagem
+    // Leitura do primeiro byte
+    fread(&byteAtual, 1, 1, fp);
+    // Definição do currBit baseado no primeiro bit
+    currBit = checkBit(byteAtual, 7);
+    // Reposicionando o ponteiro de arquivo para o início dos dados da imagem
+    fseek(fp, bf.pixelDataOffset, SEEK_SET);
+
+    // percorrendo a imagem a partir do 2o pixel, uma vez que o primeiro ja foi identificado acima
     for (y = 0; y < bf.BIHeader.imageHeigth; y++) { // percorrendo toda a altura da imagem
         //repBmp[y] = (unsigned char*)malloc((totalWidth * sizeof(char)) + 1); // aloca o espaço para cada linha. Soma 1 para alocar o espaço para o \0 que indica final do array
         //memset(repBmp[y], '\0', (sizeof(char) * totalWidth + 1)); // seta os pixels como 0 inicialmente

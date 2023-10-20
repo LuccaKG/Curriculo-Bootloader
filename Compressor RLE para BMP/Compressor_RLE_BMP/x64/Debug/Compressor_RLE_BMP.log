@@ -1,8 +1,10 @@
 ﻿  main.c
 C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(96,51): warning C4244: '=': conversão de 'double' para 'int', possível perda de dados
-C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(130,19): warning C4018: '<': incompatibilidade de signed/unsigned
-C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(140,43): warning C4047: 'função': 'unsigned char *' difere em níveis de indireção de 'int'
-C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(140,34): warning C4024: 'checkBit': tipos diferentes para parâmetro formal e real 1
-C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(144,53): warning C4047: 'função': 'unsigned char *' difere em níveis de indireção de 'int'
-C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(144,44): warning C4024: 'checkBit': tipos diferentes para parâmetro formal e real 1
+C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(132,33): warning C4047: 'função': 'unsigned char *' difere em níveis de indireção de 'int'
+C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(132,24): warning C4024: 'checkBit': tipos diferentes para parâmetro formal e real 1
+C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(137,19): warning C4018: '<': incompatibilidade de signed/unsigned
+C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(147,43): warning C4047: 'função': 'unsigned char *' difere em níveis de indireção de 'int'
+C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(147,34): warning C4024: 'checkBit': tipos diferentes para parâmetro formal e real 1
+C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(151,53): warning C4047: 'função': 'unsigned char *' difere em níveis de indireção de 'int'
+C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\main.c(151,44): warning C4024: 'checkBit': tipos diferentes para parâmetro formal e real 1
   Compressor_RLE_BMP.vcxproj -> C:\Users\lucca\OneDrive\Documentos\Projetos\Curriculo Bootloader\Compressor RLE para BMP\Compressor_RLE_BMP\x64\Debug\Compressor_RLE_BMP.exe
