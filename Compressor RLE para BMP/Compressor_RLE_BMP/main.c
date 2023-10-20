@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     int bitCounter = 0; // variavel auxiliar para ajudar a percorrer bit a bit
     int bitQty = 0; // variavel auxiliar para contar quantos bits ja foram lidos. Util para contornar/ignorar os bits de padding nas linhas
     int consecBits = 0; // variavel auxiliar para contar bits repetidos numa sequencia
-    unsigned char currBit = 0; // variavel auxiliar para identificar bit atual. Minha imagem ja começa com bit preto
+    unsigned char currBit = 1; // variavel auxiliar para identificar bit atual. Minha imagem ja começa com bit branco
     /*
     Para permitir uma execução adequada via terminal, vamos configurar as condições para argc e argv
     */
@@ -131,6 +131,7 @@ e não algum outro tipo de valor inteiro.
         //repBmp[y] = (unsigned char*)malloc((totalWidth * sizeof(char)) + 1); // aloca o espaço para cada linha. Soma 1 para alocar o espaço para o \0 que indica final do array
         //memset(repBmp[y], '\0', (sizeof(char) * totalWidth + 1)); // seta os pixels como 0 inicialmente
         bitQty = 0; // zera antes de iniciar a analise de cada linha
+        consecBits = 0; // zera antes de iniciar a analise de cada linha
         for (x = 0; x < bytesPerRow; x++) { // percorrendo toda a largura da imagem
             fread(&byteAtual, 1, 1, fp);
             for (bitCounter = 7; bitCounter >= 0; bitCounter--) { // percorre cada byte da linha
@@ -138,19 +139,18 @@ e não algum outro tipo de valor inteiro.
                 if (bitQty < totalWidth) {
                     if (checkBit(byteAtual, bitCounter) == currBit) consecBits++;  // identifica se estamos em uma sequencia; se sim, soma 1 no contador
                     else { // se nao, retorna o contador pra 1 (pois encontrou 1 de outra cor) e atualiza o currBit (bit atual)                       
-                        printf("%d, ", consecBits);
+                        printf("%d, ", consecBits);                        
                         consecBits = 1; 
                         currBit = checkBit(byteAtual, bitCounter);
                     }  
-                    bitQty++;   
-                }                 
+                    if (consecBits >= 0xff) { // encerra quando chegar em sequencias maiores que 255, que é o maximo representavel por um db em assembly
+                        return 0;
+                    }
+                }  
+                bitQty++; 
             }  
         }  
-    }
-
-    // Checa se ainda há uma sequência pendente após processar todas as linhas
-    if (consecBits > 0) {
-        printf("%d, ", consecBits);
+        printf("%d,", consecBits); // Checa se ainda há uma sequência pendente após processar todas as linhas
     }
 
     //// for para representar a imagem, que foi armazenada no trecho de codigo acima
