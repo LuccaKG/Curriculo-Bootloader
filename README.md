@@ -1,15 +1,19 @@
 # Currículo-Bootloader [em desenvolvimento]
-Para praticar os estudos de arquivos poliglotas, criei um arquivo que tanto pode ser lido como .pdf - contendo meu currículo - quanto executado como um bootloader, apresentando uma imagem monocromática .bmp junto de uma mensagem.
+Para praticar os estudos de arquivos poliglotas, criei um arquivo que tanto pode ser lido como .pdf - contendo meu currículo - quanto executado como um bootloader, apresentando uma imagem monocromática .bmp de resolução 320x200 junto de uma mensagem. O bootloader será armazenado em disquete utilizando o sistema de arquivos FAT12 e operará em arquitetura x86 modo-real.
+
+### Bootloader
+![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/cf41fa11-aeef-4bb6-b9c9-e779bde306a8)
+
 
 ## Estrutura Bootloader 🚀
 
-### Bootloader:
+### Bootloader
 Um bootloader é um software crucial que é executado cada vez que um computador ou dispositivo é ligado. Ele inicializa o hardware e carrega o sistema operacional na memória RAM, preparando o sistema para operar corretamente. Uma característica importante é que, para ser reconhecido pela BIOS durante o processo de inicialização, o bootloader deve estar localizado no Master Boot Record (MBR) de um dispositivo de armazenamento e ter exatamente 512 bytes.
 
-### Master Boot Record (MBR):
+### Master Boot Record (MBR)
 O MBR é o primeiro setor de um dispositivo de armazenamento e contém o bootloader e a tabela de partições do disco. Ele desempenha um papel fundamental no processo de inicialização, uma vez que a BIOS ou o firmware UEFI leem o MBR para encontrar o bootloader e dar início ao processo de carregamento do sistema operacional.
 
-### Interrupções Assembly na BIOS:
+### Interrupções Assembly na BIOS
 As interrupções em Assembly são mecanismos que facilitam a comunicação entre o software e o hardware, em particular com a BIOS (Sistema Básico de Entrada e Saída).
 
 ***Texto:*** Por meio da interrupção int 0x10, podemos realizar várias operações relacionadas à exibição de vídeo, incluindo escrever caracteres na tela.
@@ -43,14 +47,14 @@ Um bootloader multistage (ou multietapa) refere-se a um processo de inicializaç
 
 Vamos detalhar um pouco mais sobre essa abordagem:
 
-#### Primeira etapa (ou primeiro estágio):
+#### Primeira etapa (ou primeiro estágio)
 
 Localizado no Master Boot Record (MBR) ou em um espaço de inicialização similar.
 Devido à restrição de tamanho (o MBR tem apenas 512 bytes), este estágio geralmente contém apenas código suficiente para carregar o próximo estágio do bootloader.
 Identifica e carrega o segundo estágio do bootloader de uma localização específica no disco.
 
 
-#### Segunda etapa (ou segundo estágio):
+#### Segunda etapa (ou segundo estágio)
 
 Localizado em uma região mais flexível do disco.
 Tem mais espaço e, portanto, pode realizar tarefas mais complexas, como identificar e carregar um sistema operacional específico, configurar o hardware necessário ou até mesmo exibir um menu para o usuário escolher entre múltiplos sistemas operacionais.
@@ -98,4 +102,20 @@ Utilizando RLE, podemos codificar essa imagem como:
 </pre>
 
 O que representa uma taxa de compressão de 40%. Para arquivos maiores, essa taxa pode chegar a valores altíssimos! Todavia, um arquivo que não seja representado por dados que contenham grandes cadeias de repetições não é adequado para o algoritmo RLE e pode inclusive ter seu tamanho aumentado.
+
+## Possíveis melhorias 🔍
+
+Como fazemos a análise byte a byte de cada linha da imagem no código Assembly, trabalhamos com o tipo de variável 'db' para armazenar as sequências de pixels iguais da compressão RLE:
+
+![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/a2650f6e-0821-4f80-ab07-af25dd8f4620)
+
+Utilizar variáveis do tipo 'dw' (ou maior) distorceria essa análise byte a byte - esse é o motivo de, no código do compressor RLE em C, descartarmos sequências >= 255. Todavia, como encerramos a execução do programa quando tais sequências longas aparecem, precisamos utilizar fotos que não apresentem sequências tão extensas intermediárias, pois a compressão se encerraria antes da conclusão real da codificação da imagem.
+
+![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/ea198092-9bac-464b-929c-c2e0a850e523)
+
+Uma possível solução para conseguirmos representar qualquer imagem sem essa preocupação é alterar o script RLE em C para quebrar sequências longas em duas; por exemplo, uma sequência de 280 pixels pretos poderia ser codificada como 255 + 25. Para isso seria necessário, além da quebra, a implementação de uma sinalização para diferenciar sequências adjacentes que sejam ou não representantes de mudanças de cor dos pixels. Além disso, seria necessário também adaptar a lógica implementada em Assembly para levar em consideração tais sinalizações na representação da imagem.
+
+
+
+
 
