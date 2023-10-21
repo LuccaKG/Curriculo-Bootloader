@@ -1,9 +1,6 @@
 # Currículo-Bootloader 
 Para praticar os estudos de arquivos poliglotas, criei um arquivo que tanto pode ser lido como .pdf - contendo meu currículo - quanto executado como um bootloader, apresentando uma imagem monocromática .bmp de resolução 320x200 junto de uma mensagem. O bootloader será armazenado em disquete utilizando o sistema de arquivos FAT12 e operará em arquitetura x86 modo-real.
 
-### Currículo visualizado no Adobe Reader
-![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/fcb8cafa-066b-4915-b772-7f6c560ca87c)
-
 ### Bootloader
 ![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/cf41fa11-aeef-4bb6-b9c9-e779bde306a8)
 
