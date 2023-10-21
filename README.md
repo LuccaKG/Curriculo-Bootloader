@@ -1,4 +1,4 @@
-# Currículo-Bootloader [em desenvolvimento]
+# Currículo-Bootloader 
 Para praticar os estudos de arquivos poliglotas, criei um arquivo que tanto pode ser lido como .pdf - contendo meu currículo - quanto executado como um bootloader, apresentando uma imagem monocromática .bmp de resolução 320x200 junto de uma mensagem. O bootloader será armazenado em disquete utilizando o sistema de arquivos FAT12 e operará em arquitetura x86 modo-real.
 
 ### Bootloader
@@ -25,9 +25,32 @@ Para praticar os estudos de arquivos poliglotas, criei um arquivo que tanto pode
       
      ![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/f831ab08-f434-48c4-b029-54fcf660a8f6)
 - [x] Se desejar, faça as alterações necessárias na cor da fonte, do fundo etc
-- [x] Após essas alterações, salve o arquivo e faça a montagem utilizando o FASM ou qualquer assembler de sua preferência
+- [x] Após essas alterações, salve o arquivo e faça a montagem utilizando o FASM ou qualquer assembler de sua preferência, gerando um arquivo .bin
 - [x] Utilize o .bin gerado como bootloader em sua máquina física ou virtual. Atente-se ao fato de que o bootloader foi programado para ser armazenado em um disquete (floppy). 
 
+### Injetando código Bootloader no PDF
+
+Dividiremos o código assembly para bootloader que desenvolvemos anteriormente em 2:
+
+1. Primeira parte contendo as definições do FAT12
+2. Segunda parte contendo o bootloader de fato
+      
+- [x] Primeiro, tenha à disposição o .pdf que deseja modificar
+- [x] Como a maioria dos leitores de PDF (incluindo o Adobe Reader) permite a inserção de alguns poucos bytes antes do cabeçalho sem comprometer a leitura, é neste espaço que posicionaremos as definições do FAT12. Faremos essa alteração utilizando o editor Hexadecimal HxD. Como é possível ver na coluna "Texto decodificado", toda a configuração FAT12 foi posicionada antes do cabeçalho *%PDF-1.5*.
+
+![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/d9d6620b-e0d8-4b41-a550-102782c96234)
+
+- [x] Depois, já abaixo do cabeçalho do PDF, criaremos com ajuda do Notepad++ um objeto contendo um dicionario vazio e um stream que abrigará todo o resto do bootloader. Seu index será 47, pois o PDF já contava com objetos numerados de 0 a 46. Note que é possível ver a inserção feita anteriormente da configuração FAT12.
+
+![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/36b2bddb-c23d-46a2-a7ef-4898e88fb319)
+
+- [x] Feito isso, com auxílio do HxD, conseguimos copiar os valores hexadecimais correspondentes aos trechos de código do bootloader (Bootloader.bin) e inserir no PDF no trecho entre onde a coluna "Texto decodificado" aponta o início (stream) e o fim do objeto stream (endstream), como é de nosso interesse. É importante notar que a primeira linha do código assembly é um *jmp main* e pelo HxD é possível ver que ele aponta para o início do código Bootloader. Com essas modificações no PDF, talvez este endereço apontado precise ser corrigido via HxD - é também pertinente frisar que devemos fazer com que esse valor aponte para (endereço início do bootloader - 2 bytes), por conta do deslocamento relativo levando em consideração o espaço ocupado pela própria instrução *jmp*.
+
+     Nesta etapa fica evidente a importância do operador "nop" repetido no início do código assembly a fim de garantir o alinhamento do fluxo de execução, uma vez que entre a configuração FAT12 e o início do         Bootloader agora existe uma série de bytes relativos ao PDF; ou seja, ele ajudou funcionando como um marcador de onde seriam colocados os bytes relacionados ao PDF.
+
+![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/e0e98077-cb0c-4e27-bd0d-885e9382bde9)
+
+**E pronto! Agora já é possível utilizar o mesmo arquivo para ser lido como um .pdf ou executado como um Bootloader** 🥳 🚀 📄
 
 ## Estrutura Bootloader 🚀
 
@@ -126,6 +149,26 @@ Utilizando RLE, podemos codificar essa imagem como:
 </pre>
 
 O que representa uma taxa de compressão de 40%. Para arquivos maiores, essa taxa pode chegar a valores altíssimos! Todavia, um arquivo que não seja representado por dados que contenham grandes cadeias de repetições não é adequado para o algoritmo RLE e pode inclusive ter seu tamanho aumentado.
+
+## Estrutura PDF 📄
+
+Um arquivo PDF (Portable Document Format) é composto de uma série de objetos que definem seu conteúdo e apresentação. Esses objetos podem ser:
+
+* Objetos Simples: Números, strings, arrays, etc.
+* Objetos de Dicionário: Contêm informações sobre o documento e suas páginas.
+* Objetos de Stream: Contêm dados grandes, como imagens ou conteúdo de página.
+* Objetos Indiretos: Usados para referenciar outros objetos.
+* Tabela Xref: Uma tabela de referência cruzada que permite ao leitor acessar rapidamente qualquer objeto no PDF.
+* Trailer: Contém um dicionário com referências ao catálogo e à tabela Xref.
+* Além disso, cada PDF começa com um cabeçalho que indica a versão do PDF.
+
+### Arquivos Poliglotas e PDFs
+
+Arquivos poliglotas são arquivos que são válidos em mais de um formato de arquivo. No contexto dos PDFs, os arquivos poliglotas foram explorados para embutir conteúdo malicioso que pode ser executado em certas circunstâncias.
+
+Uma das maneiras pelas quais os invasores tentaram injetar código em arquivos PDF foi inserindo bytes entre a versão do PDF e o cabeçalho. A especificação do PDF é bastante flexível, e muitos leitores de PDF eram tolerantes a conteúdos adicionais ou irregularidades na estrutura do arquivo. Isso permitiu que invasores inserissem código ou outros dados em lugares que, tecnicamente, não deveriam afetar a leitura do PDF. Se o software que estava lendo o PDF não processasse esses bytes adicionais de maneira segura, ele poderia ser explorado.
+
+Com o tempo, muitos desses vetores de ataque foram mitigados à medida que os leitores de PDF se tornaram mais rigorosos na maneira como interpretam e processam arquivos, e as vulnerabilidades específicas foram corrigidas. 
 
 ## Possíveis melhorias 🔍
 
