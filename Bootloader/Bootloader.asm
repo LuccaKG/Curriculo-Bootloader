@@ -62,6 +62,8 @@ nop
 nop
 nop
 nop
+nop
+nop
 
 
 main:
