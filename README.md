@@ -1,5 +1,8 @@
-# Currículo-Bootloader [em desenvolvimento]
+# Currículo-Bootloader 
 Para praticar os estudos de arquivos poliglotas, criei um arquivo que tanto pode ser lido como .pdf - contendo meu currículo - quanto executado como um bootloader, apresentando uma imagem monocromática .bmp de resolução 320x200 junto de uma mensagem. O bootloader será armazenado em disquete utilizando o sistema de arquivos FAT12 e operará em arquitetura x86 modo-real.
+
+### Currículo visualizado no Adobe Reader
+![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/fcb8cafa-066b-4915-b772-7f6c560ca87c)
 
 ### Bootloader
 ![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/cf41fa11-aeef-4bb6-b9c9-e779bde306a8)
@@ -25,9 +28,39 @@ Para praticar os estudos de arquivos poliglotas, criei um arquivo que tanto pode
       
      ![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/f831ab08-f434-48c4-b029-54fcf660a8f6)
 - [x] Se desejar, faça as alterações necessárias na cor da fonte, do fundo etc
-- [x] Após essas alterações, salve o arquivo e faça a montagem utilizando o FASM ou qualquer assembler de sua preferência
+- [x] Após essas alterações, salve o arquivo e faça a montagem utilizando o FASM ou qualquer assembler de sua preferência, gerando um arquivo .bin
 - [x] Utilize o .bin gerado como bootloader em sua máquina física ou virtual. Atente-se ao fato de que o bootloader foi programado para ser armazenado em um disquete (floppy). 
 
+### Injetando código Bootloader no PDF
+
+Dividiremos o código assembly para bootloader que desenvolvemos anteriormente em 2:
+
+- [x] Primeira parte contendo as definições do FAT12
+- [x] Segunda parte contendo o bootloader de fato
+      
+Como a maioria dos leitores de PDF (incluindo o Adobe Reader) permite a inserção de alguns poucos bytes antes do cabeçalho sem comprometer a leitura, é lá que posicionaremos as definições do FAT12. Depois, já abaixo do cabeçalho do PDF, criaremos um objeto stream que abrigará todo o resto do bootloader. 
+
+#### Inserindo a configuração FAT12 antes do cabeçalho PDF
+
+Faremos essa alteração utilizando o editor Hexadecimal HxD. Como é possível ver na coluna "Texto decodificado", toda a configuração FAT12 foi posicionada antes do cabeçalho *%PDF-1.5*.
+
+![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/d9d6620b-e0d8-4b41-a550-102782c96234)
+
+#### Inserindo demais partes do Bootloader como objeto stream no PDF
+
+Primeiro, editando o arquivo PDF com o Notepad++, adicionamos um dicionario vazio <<>> e em seguida criamos um objeto stream após o cabeçalho. Seu index será 47, pois o PDF já contava com objetos numerados de 0 a 46.
+
+![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/c252a4d3-315f-4333-8d18-88582e6ab237)
+
+Note que é possível ver a inserção feita anteriormente da configuração FAT12.
+
+Feito isso, com auxílio do HxD, conseguimos copiar os valores hexadecimais correspondentes aos trechos de código do bootloader (Bootloader.bin) e inserir no PDF entre o trecho onde a coluna "Texto decodificado" aponta o início (stream) e o fim do objeto stream (endstream), como é de nosso interesse. É importante notar que a primeira linha do código assembly é um *jmp main* e pelo HxD é possível ver que ele aponta para o início do código Bootloader. Com essas modificações no PDF, talvez este endereço apontado precise ser corrigido via HxD - é também pertinente frisar que devemos fazer com que esse valor aponte para (endereço início do bootloader - 2 bytes), por conta do deslocamento relativo levando em consideração o espaço ocupado pela própria instrução *jmp*.
+
+Nesta etapa fica evidente a importância do operador "nop" repetido no início do código assembly a fim de garantir o alinhamento do fluxo de execução, uma vez que entre a configuração FAT12 e o início do Bootloader agora existe uma série de bytes relativos ao PDF; ou seja, ele ajudou funcionando como um marcador de onde seriam colocados os bytes relacionados ao PDF.
+
+![image](https://github.com/LuccaKG/Curriculo-Bootloader/assets/122898459/e0e98077-cb0c-4e27-bd0d-885e9382bde9)
+
+**E pronto! Agora já é possível utilizar o mesmo arquivo para ser lido como um .pdf ou executado como um Bootloader** 🥳 🚀 📄
 
 ## Estrutura Bootloader 🚀
 
