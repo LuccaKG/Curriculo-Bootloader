@@ -127,6 +127,26 @@ Utilizando RLE, podemos codificar essa imagem como:
 
 O que representa uma taxa de compressão de 40%. Para arquivos maiores, essa taxa pode chegar a valores altíssimos! Todavia, um arquivo que não seja representado por dados que contenham grandes cadeias de repetições não é adequado para o algoritmo RLE e pode inclusive ter seu tamanho aumentado.
 
+## Estrutura PDF 📄
+
+Um arquivo PDF (Portable Document Format) é composto de uma série de objetos que definem seu conteúdo e apresentação. Esses objetos podem ser:
+
+* Objetos Simples: Números, strings, arrays, etc.
+* Objetos de Dicionário: Contêm informações sobre o documento e suas páginas.
+* Objetos de Stream: Contêm dados grandes, como imagens ou conteúdo de página.
+* Objetos Indiretos: Usados para referenciar outros objetos.
+* Tabela Xref: Uma tabela de referência cruzada que permite ao leitor acessar rapidamente qualquer objeto no PDF.
+* Trailer: Contém um dicionário com referências ao catálogo e à tabela Xref.
+* Além disso, cada PDF começa com um cabeçalho que indica a versão do PDF.
+
+### Arquivos Poliglotas e PDFs
+
+Arquivos poliglotas são arquivos que são válidos em mais de um formato de arquivo. No contexto dos PDFs, os arquivos poliglotas foram explorados para embutir conteúdo malicioso que pode ser executado em certas circunstâncias.
+
+Uma das maneiras pelas quais os invasores tentaram injetar código em arquivos PDF foi inserindo bytes entre a versão do PDF e o cabeçalho. A especificação do PDF é bastante flexível, e muitos leitores de PDF eram tolerantes a conteúdos adicionais ou irregularidades na estrutura do arquivo. Isso permitiu que invasores inserissem código ou outros dados em lugares que, tecnicamente, não deveriam afetar a leitura do PDF. Se o software que estava lendo o PDF não processasse esses bytes adicionais de maneira segura, ele poderia ser explorado.
+
+Com o tempo, muitos desses vetores de ataque foram mitigados à medida que os leitores de PDF se tornaram mais rigorosos na maneira como interpretam e processam arquivos, e as vulnerabilidades específicas foram corrigidas. 
+
 ## Possíveis melhorias 🔍
 
 Como fazemos a análise byte a byte de cada linha da imagem no código Assembly, trabalhamos com o tipo de variável 'db' para armazenar as sequências de pixels iguais da compressão RLE:
